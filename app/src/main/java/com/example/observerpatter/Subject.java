@@ -2,7 +2,7 @@ package com.example.observerpatter;
 
 
 /**
- * This is a interface observer
+ * This is a interface observable
  */
 public interface Subject {
     void registerObserver(RepositoryObserver repositoryObserver);
