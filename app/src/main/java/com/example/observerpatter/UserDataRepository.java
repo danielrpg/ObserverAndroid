@@ -2,17 +2,15 @@ package com.example.observerpatter;
 
 import android.os.Handler;
 
-import java.util.ArrayList;
+import java.util.Observable;
 
-public class UserDataRepository implements Subject {
+public class UserDataRepository extends Observable {
     private String mFullName;
     private int mAge;
     private static UserDataRepository INSTANCE = null;
 
-    private ArrayList<RepositoryObserver> mObservers;
 
     public UserDataRepository() {
-        mObservers = new ArrayList<>();
         getNewDataFromRemote();
     }
 
@@ -24,7 +22,7 @@ public class UserDataRepository implements Subject {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                setUserData("Daniel fernandez", 101);
+                setUserData("Juan flores", 102);
             }
         }, 1000);
     }
@@ -37,30 +35,18 @@ public class UserDataRepository implements Subject {
         return INSTANCE;
     }
 
-    @Override
-    public void registerObserver(RepositoryObserver repositoryObserver) {
-        if(!mObservers.contains(repositoryObserver)) {
-            mObservers.add(repositoryObserver);
-        }
-    }
-
-    @Override
-    public void removeObserver(RepositoryObserver repositoryObserver) {
-        if(mObservers.contains(repositoryObserver)) {
-            mObservers.remove(repositoryObserver);
-        }
-    }
-
-    @Override
-    public void notifyObservers() {
-        for(RepositoryObserver observer: mObservers) {
-            observer.onUserDataChanged(mFullName, mAge);
-        }
-    }
-
     public void setUserData(String fullName, int age) {
         mFullName = fullName;
         mAge = age;
+        setChanged();
         notifyObservers();
+    }
+
+    public String getFullName() {
+        return mFullName;
+    }
+
+    public int getAge() {
+        return mAge;
     }
 }

@@ -5,9 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements RepositoryObserver {
+import java.util.Observable;
+import java.util.Observer;
 
-    private Subject mUserDataRepository;
+public class MainActivity extends AppCompatActivity implements Observer {
+
+    private Observable mUserDataRepository;
     private TextView mTextViewUserFullName;
     private TextView mTextViewUserAge;
 
@@ -20,18 +23,21 @@ public class MainActivity extends AppCompatActivity implements RepositoryObserve
         mTextViewUserFullName = findViewById(R.id.text_view_full_name);
 
         mUserDataRepository = UserDataRepository.getInstance();
-        mUserDataRepository.registerObserver(this);
+        mUserDataRepository.addObserver(this);
     }
 
     @Override
-    public void onUserDataChanged(String fullName, int age) {
-        mTextViewUserFullName.setText("Full Name is: " + fullName);
-        mTextViewUserAge.setText("Age is: " + age);
+    public void update(Observable observable, Object o) {
+        if(observable instanceof UserDataRepository) {
+            UserDataRepository userDataRepository = (UserDataRepository) observable;
+            mTextViewUserAge.setText(String.valueOf(userDataRepository.getAge()));
+            mTextViewUserFullName.setText(userDataRepository.getFullName());
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mUserDataRepository.removeObserver(this);
+        mUserDataRepository.deleteObserver(this);
     }
 }
